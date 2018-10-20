@@ -9,7 +9,9 @@ library(glmnet)
 ####### PARTE 1 ########
 
 #limpieza de la base de datos
-BD_T1 <-read_excel("C:/Users/JavieraValentina/Desktop/T1mkt/BD_T1.xlsx")
+BD_T1 <-read_excel("C:/Users/JavieraValentina/Desktop/Tarea1mkt/BD_T1.xlsx")
+#BD_T1 <-read.csv(file="C:/Users/JavieraValentina/Desktop/Tarea1mkt/Data_Super.csv", header=TRUE, sep=";", encoding = 'UTF-8')
+#Limpieza de datos
 #Limpieza de datos
 str(BD_T1)
 BD_T1_mod = BD_T1[1:58]
@@ -76,6 +78,7 @@ ggplot(data = bd) + geom_bar(mapping = aes(x = bd$CALIDAD_PROD, y = ..prop.. ,fi
 ####### PARTE 2 ########
 
 #regresion de satisfaccion general P18, satisfaccion_total
+#escogido segun matriz de corr
 reg_S_1=lm(data= bd, formula= SATISFACCION_TOTAL~ EXPERIENCIA + DISPONIBILIDAD + DISP_CAJEROS + DISP_VENDEDORES )
 summary(reg_S_1)
 
@@ -83,9 +86,12 @@ reg_S_2=lm(data= bd, formula= SATISFACCION_TOTAL~ EXPERIENCIA + DISPONIBILIDAD +
 summary(reg_S_2)
 
 #regresion de recomendacion
-
-reg_R_1=lm(data= bd, formula= RECOMENDACION~ EXPERIENCIA + LIMPIEZA + VARIEDAD)
+#escogido segun matriz de corr
+reg_R_1=lm(data= bd, formula= RECOMENDACION~ EXPERIENCIA + DISPONIBILIDAD + DISP_CAJEROS + DISP_VENDEDORES )
 summary(reg_R_1)
+
+reg_R_2=lm(data= bd, formula= RECOMENDACION~ EXPERIENCIA + SATISFACCION_TOTAL + RECOMPRA)
+summary(reg_R_2)
 
 
 #regresion con modelo automatico LASSO
@@ -105,4 +111,19 @@ cvlasso2 = cv.glmnet(x_lasso2,y_lasso2)
 summary(cvlasso2)
 coef(cvlasso2, s = "lambda.1se")
 cvlasso2$lambda.min
+
+
+####### PARTE 5 ########
+# H0: Tiempo de espera en cajas no afecta la satisfacción total
+# H1: Hay efectos en la satisfacción total según el tiempo de espera en caja
+tiempo_caja=bd$TIEMPO_ESPERA
+satisfaccion=bd$SATISFACCION_TOTAL
+t.test(satisfaccion,tiempo_caja)
+
+# H0: Tiempo de permanencia en el supermercado no afecta la satisfacción total
+# H1: Hay efectos en la satisfacción total según el tiempo de espera
+tiempo_tot=bd$TIEMPO_ESPERA
+satisfaccion=bd$SATISFACCION_TOTAL
+t.test(satisfaccion,tiempo_caja)
+
 
